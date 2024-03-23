@@ -1,12 +1,17 @@
 # Inventory Management
+
 In this assignment, you will create a simple inventory management system which allows users to add, remove, and view items in the inventory.
 
 ## Requirements
 
 ## Level 1 - Mandatory
+
 1. Create class `Item`, which has name (readonly), quantity, and created date, which are private. Amount of each item cannot be negative. Provide the following features:
+
 - Contructor to take parameters of name, quantity, and created date (optional, if not set, it will be current date).
+
 2. Create class `Store` with the following properties and methods:
+
 - A collection to store items, which is private. Initially, this will be an empty collection.
 - Methods to add/delete one item to the collection. Do not allow to add items with same name to the store
 - Method `GetCurrentVolume` to compute the total amount of items in the store
@@ -33,12 +38,16 @@ var sunscreen = new Item("Sunscreen", 8);
 ```
 
 ## Level 2 - Extra feature: Capacity
-Class `Store` should have the following features: 
+
+Class `Store` should have the following features:
+
 - Maximum capacity , which is total amount of items allowed in the store, and contructor should also take an integer value as the maximum capacity of the inventory.
 - Modify the add method to not overload the capacity
 
 ## Level 3 - Extra feature: Complex functionalities
+
 Class `Store` should have extra features
+
 - Method `SortByDate` to get the sorted collection by date dynamically (asc or desc)
   ```
    // method invocation example - You do not need to follow exactly the same
@@ -61,7 +70,7 @@ Class `Store` should have extra features
           Console.WriteLine($" - {item.Name}, Created: {item.CreatedDate.ToShortDateString()}");
       }
   }
-  
+
   //Expected outcome
   New Arrival Items:
    - Coffee, Created: [current date]
@@ -69,7 +78,7 @@ Class `Store` should have extra features
    - Batteries, Created: [current date]
    - Umbrella, Created: [current date]
    - Sunscreen, Created: [current date]
-  
+
   Old Items:
    - Water Bottle, Created: 01/01/2023
    - Chocolate Bar, Created: 02/01/2023
@@ -82,3 +91,7 @@ Class `Store` should have extra features
    - Shampoo, Created: 09/01/2023
    - Toothbrush, Created: 10/01/2023
   ```
+
+## Deadline
+
+Thursday 28th End of day
