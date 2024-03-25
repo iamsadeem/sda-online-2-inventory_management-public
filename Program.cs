@@ -89,7 +89,7 @@ class Program {
 
                 var existingItem = store.FindItemByName(input);
                 if (existingItem != null) {
-                    Console.WriteLine($"An item with the name '{input}' already exists in the store. \nEnter a new item name or type Quit:");
+                    Console.WriteLine($"An item with the name '{input}' already exists in the store. \nEnter a new item name or type Q to Quit:");
                     continue;
 
                 } else {
@@ -98,9 +98,8 @@ class Program {
                         Console.WriteLine("Enter the creation date in format (yyyy, MM, dd), or leave empty for today's date:");
                         DateTime? createdDate = null;
                         var dateInput = Console.ReadLine();
-                        
                         if (!string.IsNullOrWhiteSpace(dateInput) && DateTime.TryParse(dateInput, out DateTime parsedDate)) {
-                        createdDate = parsedDate;
+                            createdDate = parsedDate;
                         }
 
                         var newItem = new Item(input, quantity, createdDate);
