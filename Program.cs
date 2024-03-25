@@ -2,10 +2,11 @@
 
 // Entry point of the program
 class Program {
+
     static void Main(string[] args) {
 
-        // Creating a new instance of the Store class to manage the items
-        var store = new Store();
+        // Creating a new instance of the Store class to manage the items with 300 max capacity
+        var store = new Store(300);
 
         // Creating items to be added to the store with their names, quantities, and optional creation dates
         var waterBottle = new Item("Water Bottle", 10, new DateTime(2023, 1, 1));
@@ -43,7 +44,6 @@ class Program {
 
         // Print current volume
         Console.WriteLine($"Current volume: {store.GetCurrentVolume()}");
-
         // Print sorted items by name
         Console.WriteLine("Sorted items by name:");
         var sortedItems = store.SortByNameAsc();
@@ -53,16 +53,14 @@ class Program {
         }
 
         // Find and delete an item by name input
-        Console.WriteLine("\nEnter an item's name to delete it or type Quit:");
+        Console.WriteLine("\nEnter an item's name to delete it or type Q to Quit:");
         string? input;
-
-        while ((input = Console.ReadLine()) != "Quit") {
+        while ((input = Console.ReadLine()) != "Q") {
 
             if (input != null) {
 
-                var item = store.FindItemByName(input);
-                if (item != null) {
-                    store.DeleteItem(item.Name);
+                if (store.FindItemByName(input) != null)  {
+                    store.DeleteItem(input);
                     Console.WriteLine($"{input} deleted from the store.");
                     break;
 
@@ -74,7 +72,62 @@ class Program {
         }
 
         // Print current volume again
-        Console.WriteLine($"Current volume: {store.GetCurrentVolume()}");
+        Console.WriteLine($"\nCurrent volume: {store.GetCurrentVolume()}");
+        // Print sorted items by name
+        Console.WriteLine("Sorted items by name:");
+        sortedItems = store.SortByNameAsc();
+        foreach (var sortedItem in sortedItems) {
+
+            Console.WriteLine(sortedItem.ToString());        
+        }
+        
+        // Add an item through input sequentially; first name then quantity and optional date
+        Console.WriteLine("\nEnter an item's name to add it to the store, or type Q to Quit:");
+        while ((input = Console.ReadLine()) != "Q") {
+
+            if (!string.IsNullOrWhiteSpace(input)) {
+
+                var existingItem = store.FindItemByName(input);
+                if (existingItem != null) {
+                    Console.WriteLine($"An item with the name '{input}' already exists in the store. \nEnter a new item name or type Quit:");
+                    continue;
+
+                } else {
+                    Console.WriteLine($"Enter the quantity of '{input}':");
+                    if (int.TryParse(Console.ReadLine(), out int quantity)) {
+                        Console.WriteLine("Enter the creation date in format (yyyy, MM, dd), or leave empty for today's date:");
+                        DateTime? createdDate = null;
+                        var dateInput = Console.ReadLine();
+                        
+                        if (!string.IsNullOrWhiteSpace(dateInput) && DateTime.TryParse(dateInput, out DateTime parsedDate)) {
+                        createdDate = parsedDate;
+                        }
+
+                        var newItem = new Item(input, quantity, createdDate);
+                        store.AddItem(newItem);
+                        Console.WriteLine($"{input} added to the store.");
+                        break;
+
+                    } else {
+                        Console.WriteLine("Invalid quantity. Please enter a valid number.");
+                    }
+                }
+
+            } else {
+                Console.WriteLine("Please enter a valid name.");
+            }
+        }
+
+        // Print current volume again
+        Console.WriteLine($"\nCurrent volume: {store.GetCurrentVolume()}");
+        // Print sorted items by name
+        Console.WriteLine("Sorted items by name:");
+        sortedItems = store.SortByNameAsc();
+        foreach (var sortedItem in sortedItems) {
+
+            Console.WriteLine(sortedItem.ToString());        
+        }
+
     }
 }
 
@@ -86,32 +139,31 @@ Each item has a unique name, a specified quantity, and an optional creation date
 The quantity indicates the number of units of the item available in stock and cannot be negative.
 If no creation date is provided, the current date is used by default.
 */
-
 public class Item {    
 
     public string Name { get; }
-    private int quantity;
-    private DateTime createdDate;
+    private int _quantity;
+    private DateTime _createdDate;
 
     public int Quantity {
     
-        get => quantity;
+        get => _quantity;
         set {
         
             if (value < 0) {
-                throw new ArgumentOutOfRangeException(nameof(value), "Quantity cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(Quantity), "Quantity cannot be negative.");
             }
-            quantity = value;
+            _quantity = value;
         }
     }
 
-    public DateTime CreatedDate => createdDate;
+    public DateTime CreatedDate => _createdDate;
 
     public Item(string name, int quantity, DateTime? createdDate = null) {
 
         Name = name;
         Quantity = quantity;
-        this.createdDate = createdDate ?? DateTime.Now;
+        this._createdDate = createdDate ?? DateTime.Now;
     }
 
     // Override ToString() functiom to print items
@@ -120,21 +172,29 @@ public class Item {
 
 /**
 
-The Store class manages a collection of items within a store, providing essential functionality to interact with the inventory.
+The Store class manages a collection of items within a store with fixed capacity, providing essential functionality to interact with the inventory.
 It allows adding, deleting, searching for items, and retrieving the current total volume of items and sorting them alphabetically by name.
 */
 public class Store {
     
     private List<Item> items;
+    private int MAX_CAPACITY;
 
-    public Store() {
+    public Store(int maximumCapacity) {
         items = new List<Item>();
+        this.MAX_CAPACITY = maximumCapacity;
     }
 
     public void AddItem(Item item) {
 
-        if (items.Any(i => i.Name == item.Name)) {
+        int currentVolume = GetCurrentVolume();
+        int totalVolumeAfterAddition = currentVolume + item.Quantity;
 
+        if (totalVolumeAfterAddition > MAX_CAPACITY) {
+            throw new InvalidOperationException("Adding this item would exceed the maximum capacity of the store.");
+        }
+
+        if (items.Any(i => i.Name == item.Name)) {
             throw new ArgumentException($"An item with name '{item.Name}' already exists in the store.");
         }
 
@@ -145,7 +205,6 @@ public class Store {
 
         var item = FindItemByName(name);
         if (item != null) {
-
             items.Remove(item);
         }
     }
@@ -155,9 +214,9 @@ public class Store {
         return items.Sum(i => i.Quantity);
     }
 
-    public Item FindItemByName(string name) {
+    public Item? FindItemByName(string name) {
 
-        return items.FirstOrDefault(i => i.Name == name)!;
+        return items.FirstOrDefault(i => i.Name == name);
     }
 
     public List<Item> SortByNameAsc() {
