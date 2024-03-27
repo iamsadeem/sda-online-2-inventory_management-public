@@ -67,7 +67,7 @@ class Program
             // Prompt the user with options
             Console.WriteLine("\nChoose an option:");
             Console.WriteLine("1. Delete an item from the store.");
-            Console.WriteLine("2. Add an item to the stor.");
+            Console.WriteLine("2. Add an item to the store.");
             Console.WriteLine("3. Sort items by creation date: ascending/descending.");
             Console.WriteLine("4. Grouping items based on their creation dates: New/Old.");
             Console.WriteLine("5. Quit.\n");
